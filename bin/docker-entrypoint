@@ -1,8 +1,18 @@
 #!/bin/bash -e
 
-# If running the rails server then create or migrate existing database
-if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
-  ./bin/rails db:prepare
+# Se o comando é 'rails server', prepara o DB de desenvolvimento e remove o PID.
+if [ "$1" == "bundle" ] && [ "$2" == "exec" ] && [ "$3" == "rails" ] && [ "$4" == "s" ]; then
+    ./bin/rails db:prepare
+    
+    # Remove o arquivo PID que impede o servidor de iniciar se a execução anterior falhou
+    if [ -f tmp/pids/server.pid ]; then
+        rm tmp/pids/server.pid
+    fi
 fi
 
-exec "${@}"
+# Se o comando é 'rspec', prepara o DB de teste.
+if [ "$1" == "bundle" ] && [ "$2" == "exec" ] && [ "$3" == "rspec" ]; then
+    ./bin/rails db:prepare RAILS_ENV=test
+fi
+
+exec "$@"
