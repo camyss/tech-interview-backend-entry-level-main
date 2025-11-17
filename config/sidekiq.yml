@@ -1,7 +1,6 @@
 :concurrency: 3
 :timeout: 60
 :verbose: true
-:schedule: config/schedule.yml
 :queues:
   - critical
   - default
