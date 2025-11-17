@@ -46,7 +46,7 @@ services:
   sidekiq:
     build: .
     entrypoint: ['bash', 'bin/docker-entrypoint']
-    command: bundle exec sidekiq
+    command: bundle exec sidekiq -C config/sidekiq.yml
     volumes:
       - .:/rails
     depends_on:
