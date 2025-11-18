@@ -10,10 +10,11 @@ services:
             - postgres13:/var/lib/postgresql/data
     redis:
         image: redis:7.0.15-alpine
-        ports:
-        - '6379:6379'
+        command: redis-server --save 60 1 --loglevel warning
         volumes:
-        - redis_data:/data  
+            - redis_data:/data
+        ports:
+            - "6379:6379"
     web:
         build: .
         entrypoint: ['bash', 'bin/docker-entrypoint']
@@ -28,11 +29,11 @@ services:
             - redis
         environment:
             - DATABASE_URL=postgresql://postgres:password@db:5432/store_development
-            - REDIS_URL=redis://redis:6379
+            - REDIS_URL=redis://redis:6379/0
     sidekiq:
         build: .
         entrypoint: ['bash', 'bin/docker-entrypoint']
-        command: bundle exec sidekiq
+        command: bundle exec sidekiq -C config/sidekiq.yml
         volumes:
             - .:/rails
         depends_on:
@@ -40,7 +41,7 @@ services:
             - redis
         environment:
             - DATABASE_URL=postgresql://postgres:password@db:5432/store_development
-            - REDIS_URL=redis://redis:6379
+            - REDIS_URL=redis://redis:6379/0
     test:
         build: .
         entrypoint: ['bash', 'bin/docker-entrypoint']

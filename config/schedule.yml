@@ -1,5 +1,0 @@
-abandoned_carts_cleanup:
-  cron: "0 * * * *" 
-  class: MarkCartAsAbandonedJob
-  queue: default
-  description: 'Mark and remove abandoned shopping carts.'

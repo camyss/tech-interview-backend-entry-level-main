@@ -1,9 +1,8 @@
-class Cart < ApplicationRecord
+class Cart < ApplicationRecord 
 
   has_many :cart_items, dependent: :destroy
 
   def total_price
-    # Calcula o preço total somando o total_price de todos os itens
     cart_items.sum(&:total_price)
   end
 
@@ -21,4 +20,6 @@ class Cart < ApplicationRecord
 
   def self.remove_abandoned
     abandoned_for_removal.destroy_all
+  end
+
 end

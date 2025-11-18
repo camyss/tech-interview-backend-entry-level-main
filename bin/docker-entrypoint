@@ -1,18 +1,23 @@
 #!/bin/bash -e
 
-# Se o comando é 'rails server', prepara o DB de desenvolvimento e remove o PID.
-if [ "$1" == "bundle" ] && [ "$2" == "exec" ] && [ "$3" == "rails" ] && [ "$4" == "s" ]; then
-    ./bin/rails db:prepare
-    
-    # Remove o arquivo PID que impede o servidor de iniciar se a execução anterior falhou
-    if [ -f tmp/pids/server.pid ]; then
-        rm tmp/pids/server.pid
-    fi
+# Remove server.pid if exists
+if [ -f tmp/pids/server.pid ]; then
+  rm tmp/pids/server.pid
 fi
 
-# Se o comando é 'rspec', prepara o DB de teste.
-if [ "$1" == "bundle" ] && [ "$2" == "exec" ] && [ "$3" == "rspec" ]; then
-    ./bin/rails db:prepare RAILS_ENV=test
+# Prepare database for any Rails server command
+if [[ "$*" == *"server"* ]] || [[ "$*" == *"rails s"* ]]; then
+  echo "Preparing development database..."
+  bundle exec rails db:create 2>/dev/null || true
+  bundle exec rails db:migrate
+  bundle exec rails db:seed 2>/dev/null || true
+fi
+
+# Prepare test database for RSpec
+if [[ "$*" == *"rspec"* ]]; then
+  echo "Preparing test database..."
+  RAILS_ENV=test bundle exec rails db:create 2>/dev/null || true
+  RAILS_ENV=test bundle exec rails db:migrate
 fi
 
 exec "$@"

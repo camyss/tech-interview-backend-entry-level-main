@@ -1,6 +1,12 @@
 :concurrency: 3
 :timeout: 60
 :verbose: true
+
+:redis:
+  :url: <%= ENV.fetch("REDIS_URL", "redis://redis:6379/0") %>
+  :network_timeout: 10
+  :timeout: 10
+
 :queues:
   - critical
   - default
